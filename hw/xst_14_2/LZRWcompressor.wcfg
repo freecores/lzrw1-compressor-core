@@ -3,7 +3,7 @@
    <wave_state>
    </wave_state>
    <db_ref_list>
-      <db_ref path="G:/e-/logic-analyzer/LZRW-compressor/hw/xst_14_2/LZRWcompressor_tb_isim_beh.wdb" id="1" type="auto">
+      <db_ref path="/home/lukas/e-/logic-analyzer/LZRW-compressor-OC/lzrw1-compressor-core/lzrw1-compressor-core/trunk/hw/xst_14_2/LZRWcompressor_tb_isim_beh.wdb" id="1" type="auto">
          <top_modules>
             <top_module name="lzrwcompressor_tb" />
             <top_module name="numeric_std" />
@@ -19,7 +19,7 @@
          </top_modules>
       </db_ref>
    </db_ref_list>
-   <WVObjectSize size="130" />
+   <WVObjectSize size="129" />
    <wave_markers>
       <marker time="1650000000" label="" />
    </wave_markers>
@@ -121,14 +121,6 @@
    <wvobject fp_name="/lzrwcompressor_tb/DUT/wrhistbufxs" type="logic" db_ref_id="1">
       <obj_property name="ElementShortName">wrhistbufxs</obj_property>
       <obj_property name="ObjectShortName">wrhistbufxs</obj_property>
-   </wvobject>
-   <wvobject fp_name="/lzrwcompressor_tb/DUT/done0xsn" type="logic" db_ref_id="1">
-      <obj_property name="ElementShortName">done0xsn</obj_property>
-      <obj_property name="ObjectShortName">done0xsn</obj_property>
-   </wvobject>
-   <wvobject fp_name="/lzrwcompressor_tb/DUT/done0xsp" type="logic" db_ref_id="1">
-      <obj_property name="ElementShortName">done0xsp</obj_property>
-      <obj_property name="ObjectShortName">done0xsp</obj_property>
    </wvobject>
    <wvobject fp_name="/lzrwcompressor_tb/DUT/datain0xdn" type="array" db_ref_id="1">
       <obj_property name="ElementShortName">datain0xdn[7:0]</obj_property>
@@ -261,6 +253,11 @@
       <obj_property name="ObjectShortName">candidate2xdn[127:0]</obj_property>
       <obj_property name="Radix">HEXRADIX</obj_property>
    </wvobject>
+   <wvobject fp_name="/lzrwcompressor_tb/DUT/candlen2xdn" type="other" db_ref_id="1">
+      <obj_property name="ElementShortName">candlen2xdn</obj_property>
+      <obj_property name="ObjectShortName">candlen2xdn</obj_property>
+      <obj_property name="Radix">UNSIGNEDDECRADIX</obj_property>
+   </wvobject>
    <wvobject fp_name="/lzrwcompressor_tb/DUT/lookaheadbuf1xdp" type="array" db_ref_id="1">
       <obj_property name="DisplayName">label</obj_property>
       <obj_property name="ElementShortName">lookaheadbuf1xdp[15:0]</obj_property>
@@ -316,11 +313,6 @@
       <obj_property name="ObjectShortName">lookaheadptr2xdn[11:0]</obj_property>
       <obj_property name="Radix">HEXRADIX</obj_property>
    </wvobject>
-   <wvobject fp_name="/lzrwcompressor_tb/DUT/candlen2xd" type="other" db_ref_id="1">
-      <obj_property name="ElementShortName">candlen2xd</obj_property>
-      <obj_property name="ObjectShortName">candlen2xd</obj_property>
-      <obj_property name="Radix">HEXRADIX</obj_property>
-   </wvobject>
    <wvobject fp_name="/lzrwcompressor_tb/DUT/endofdata2xsn" type="logic" db_ref_id="1">
       <obj_property name="ElementShortName">endofdata2xsn</obj_property>
       <obj_property name="ObjectShortName">endofdata2xsn</obj_property>
@@ -349,6 +341,10 @@
    <wvobject fp_name="/lzrwcompressor_tb/DUT/endofdata2xsp" type="logic" db_ref_id="1">
       <obj_property name="ElementShortName">endofdata2xsp</obj_property>
       <obj_property name="ObjectShortName">endofdata2xsp</obj_property>
+   </wvobject>
+   <wvobject fp_name="/lzrwcompressor_tb/DUT/candlen2xdp" type="other" db_ref_id="1">
+      <obj_property name="ElementShortName">candlen2xdp</obj_property>
+      <obj_property name="ObjectShortName">candlen2xdp</obj_property>
    </wvobject>
    <wvobject fp_name="/lzrwcompressor_tb/DUT/nextwradr2xdp" type="other" db_ref_id="1">
       <obj_property name="ElementShortName">nextwradr2xdp</obj_property>

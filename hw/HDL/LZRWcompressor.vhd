@@ -178,7 +178,7 @@ architecture Behavioral of LZRWcompressor is
   signal Candidate2xDN, Candidate2xDP           : std_logic_vector(LOOK_AHEAD_LEN*8-1 downto 0) := (others => '0');
   signal NextWrAdr2xDN, NextWrAdr2xDP           : integer range 0 to LOOK_AHEAD_LEN             := 0;
   signal CandAddr2xDN, CandAddr2xDP             : std_logic_vector(11 downto 0)                 := (others => '0');
-  signal CandLen2xD                             : integer range 0 to LOOK_AHEAD_LEN;
+  signal CandLen2xDN, CandLen2xDP               : integer range 0 to LOOK_AHEAD_LEN;
   signal EndOfData2xSN, EndOfData2xSP           : std_logic                                     := '0';
   signal OffsetIntxD                            : integer range -HIST_BUF_LEN to HIST_BUF_LEN;
   signal OffsetxD                               : std_logic_vector(11 downto 0);
@@ -213,15 +213,15 @@ begin
     Strobe0xSN        <= '0';
     EndOfData0xSN     <= '0';
     DataIn0xDN        <= DataIn0xDP;
-    BusyxSN           <= '0'; 
+    BusyxSN           <= '0';
 
     case StatexSP is
       when ST_FILL_LOOK_AHEAD =>
         -- don't shift here, we are still loading data
         --ShiftLookAheadxSN <= StrobexSI;  -- the shift is delayed by one cycle because we have to process the byte first
-        WrHistBufxS       <= StrobexSI;
-        DataIn0xDN        <= DataInxDI;
-        if FlushBufxSI='1' then
+        WrHistBufxS <= StrobexSI;
+        DataIn0xDN  <= DataInxDI;
+        if FlushBufxSI = '1' then
           StatexSN <= ST_DRAIN_LOOK_AHEAD;
         elsif LookAheadLenxDP = LOOK_AHEAD_LEN-1 then
           -- this byte is number look_ahead_len-1, so it is the last one before the buffer is full
@@ -256,7 +256,7 @@ begin
     end case;
 
     if OutFIFOLengthxD > OUT_FIFO_THR then
-      BusyxSN <= '1';                   -- request stop of data input if output FIFO is full
+      BusyxSN <= '1';  -- request stop of data input if output FIFO is full
     end if;
   end process;
 
@@ -293,7 +293,7 @@ begin
     process (DataInxDI, LookAheadLenxDP, ShiftLookAheadxSP, StrobexSI,
              lookAheadBufxDP)
     begin  -- process
-      lookAheadBufxDN(i) <= lookAheadBufxDP(i);  -- default: do nothing
+      lookAheadBufxDN(i) <= lookAheadBufxDP(i);      -- default: do nothing
       if ShiftLookAheadxSP = '1' then
         lookAheadBufxDN(i) <= lookAheadBufxDP(i+1);  -- shift done one entry
       elsif LookAheadLenxDP = i and StrobexSI = '1' then
@@ -400,27 +400,32 @@ begin
   MaxCandLenxD <= LOOK_AHEAD_LEN;
 
 -- use a shifter to implement the last two bytes of the address
-  process (CandAddr1xDP, CandAddr2xDP, Candidate2xDP, HistBufLen1xDP,
-           HistBufLen2xDP, HistBufOutxD, LookAheadBuf1xDP, LookAheadBuf2xDP,
-           LookAheadLen1xDP, LookAheadLen2xDP, LookAheadPtr1xDP, MaxCandLenxD,
-           Strobe1xSP)
+  process (CandAddr1xDP, CandAddr2xDP, CandLen2xDP, Candidate2xDP,
+           HistBufLen1xDP, HistBufLen2xDP, HistBufOutxD, LookAheadBuf1xDP,
+           LookAheadBuf2xDP, LookAheadLen1xDP, LookAheadLen2xDP,
+           LookAheadPtr1xDP, LookAheadPtr2xDP, MaxCandLenxD, Strobe1xSP)
   begin
     Candidate2xDN    <= Candidate2xDP;
     LookAheadBuf2xDN <= LookAheadBuf2xDP;
     LookAheadLen2xDN <= LookAheadLen2xDP;
     CandAddr2xDN     <= CandAddr2xDP;
+    LookAheadPtr2xDN <= LookAheadPtr2xDP;
     HistBufLen2xDN   <= HistBufLen2xDP;
-
+    CandLen2xDN      <= CandLen2xDP;
+    -- send data through pipeline when strobe is high
     if Strobe1xSP = '1' then
+      -- note: the history buffer can't load data only from addresses where the
+      -- last two bits are zero. If this was not the case we shift the candidate
+      -- (which makes it shorter) to correct that
       case CandAddr1xDP(1 downto 0) is
         when "00" => Candidate2xDN <= HistBufOutxD;  -- no shifting
-                     CandLen2xD <= MaxCandLenxD;
+                     CandLen2xDN <= MaxCandLenxD;
         when "01" => Candidate2xDN <= x"00" & HistBufOutxD(LOOK_AHEAD_LEN*8-1 downto 8);  -- shift one byte
-                     CandLen2xD <= MaxCandLenxD-1;  -- we shifted one byte out -> candidate is one byte shorter
+                     CandLen2xDN <= MaxCandLenxD-1;  -- we shifted one byte out -> candidate is one byte shorter
         when "10" => Candidate2xDN <= x"0000" & HistBufOutxD(LOOK_AHEAD_LEN*8-1 downto 16);  -- shift 2 bytes
-                     CandLen2xD <= MaxCandLenxD-2;
+                     CandLen2xDN <= MaxCandLenxD-2;
         when "11" => Candidate2xDN <= x"000000" & HistBufOutxD(LOOK_AHEAD_LEN*8-1 downto 24);  -- shift 3 bytes
-                     CandLen2xD <= MaxCandLenxD-3;
+                     CandLen2xDN <= MaxCandLenxD-3;
         when others => null;
       end case;
 
@@ -457,7 +462,7 @@ begin
       LookAheadxDI    => CompLAIn3xD,
       LookAheadLenxDI => LookAheadLen2xDP,
       CandidatexDI    => Candidate2xDP,
-      CandidateLenxDI => CandLen2xD,
+      CandidateLenxDI => CandLen2xDP,
       MatchLenxDO     => MatchLenxD);
 
   -- calculate the offset
@@ -574,6 +579,7 @@ begin
         LookAheadPtr2xDP   <= LookAheadPtr2xDN;
         CandAddr2xDP       <= CandAddr2xDN;
         Candidate2xDP      <= Candidate2xDN;
+        CandLen2xDP        <= CandLen2xDN;
         HashTableEntry2xDP <= HashTableEntry2xDN;
         EndOfData0xSP      <= EndOfData0xSN;
         EndOfData1xSP      <= EndOfData1xSN;
