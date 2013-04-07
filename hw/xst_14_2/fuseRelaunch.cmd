@@ -1,0 +1,1 @@
+-intstyle "ise" -incremental -lib "secureip" -o "/home/lukas/e-/logic-analyzer/LZRW-compressor/hw/xst_14_2/LZRWcompressor_tb_isim_beh.exe" -prj "/home/lukas/e-/logic-analyzer/LZRW-compressor/hw/xst_14_2/LZRWcompressor_tb_beh.prj" "work.LZRWcompressor_tb" 
